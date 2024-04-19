@@ -651,6 +651,7 @@ class CustomField(CloningMixin, ExportTemplatesMixin, ChangeLoggedModel):
     def _parse_isoformat_date(self, dtstr):
         # It is assumed that this is an ASCII-only string of lengths 7, 8 or 10,
         # see the comment on Modules/_datetimemodule.c:_find_isoformat_datetime_separator
+        # TODO: Remove when drop python 3.10
         assert len(dtstr) in (7, 8, 10)
         year = int(dtstr[0:4])
         has_sep = dtstr[4] == '-'
@@ -732,11 +733,13 @@ class CustomField(CloningMixin, ExportTemplatesMixin, ChangeLoggedModel):
         return time_comps
 
     # Helpers for parsing the result of isoformat()
+    # TODO: Remove when drop python 3.10
     def _is_ascii_digit(self, c):
         return c in "0123456789"
 
     def _find_isoformat_datetime_separator(self, dtstr):
         # See the comment in _datetimemodule.c:_find_isoformat_datetime_separator
+        # TODO: Remove when drop python 3.10
         len_dtstr = len(dtstr)
         if len_dtstr == 7:
             return 7
@@ -793,6 +796,7 @@ class CustomField(CloningMixin, ExportTemplatesMixin, ChangeLoggedModel):
 
     def fromisoformat(self, date_string):
         """Construct a datetime from a string in one of the ISO 8601 formats."""
+        # TODO: Remove when drop python 3.10
         if not isinstance(date_string, str):
             raise TypeError('fromisoformat: argument must be str')
 
