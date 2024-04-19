@@ -599,6 +599,116 @@ class CustomField(CloningMixin, ExportTemplatesMixin, ChangeLoggedModel):
 
         return filter_instance
 
+    def _parse_hh_mm_ss_ff(tstr):
+        # Parses things of the form HH[:?MM[:?SS[{.,}fff[fff]]]]
+        # TODO: Remove when drop python 3.10
+        len_str = len(tstr)
+
+        time_comps = [0, 0, 0, 0]
+        pos = 0
+        for comp in range(0, 3):
+            if (len_str - pos) < 2:
+                raise ValueError(_("Incomplete time component"))
+
+            time_comps[comp] = int(tstr[pos:pos + 2])
+
+            pos += 2
+            next_char = tstr[pos:pos + 1]
+
+            if comp == 0:
+                has_sep = next_char == ':'
+
+            if not next_char or comp >= 2:
+                break
+
+            if has_sep and next_char != ':':
+                raise ValueError(_("Invalid time separator: %c") % next_char)
+
+            pos += has_sep
+
+        if pos < len_str:
+            if tstr[pos] not in '.,':
+                raise ValueError(_("Invalid microsecond component"))
+            else:
+                pos += 1
+
+                len_remainder = len_str - pos
+
+                if len_remainder >= 6:
+                    to_parse = 6
+                else:
+                    to_parse = len_remainder
+
+                time_comps[3] = int(tstr[pos:(pos + to_parse)])
+                if to_parse < 6:
+                    time_comps[3] *= _FRACTION_CORRECTION[to_parse - 1]
+                if (len_remainder > to_parse and not all(map(_is_ascii_digit, tstr[(pos + to_parse):]))):
+                    raise ValueError(_("Non-digit values in unparsed fraction"))
+
+        return time_comps
+
+    def _parse_isoformat_time(self, tstr):
+        # Format supported is HH[:MM[:SS[.fff[fff]]]][+HH:MM[:SS[.ffffff]]]
+        # TODO: Remove when drop python 3.10
+        len_str = len(tstr)
+        if len_str < 2:
+            raise ValueError(_("Isoformat time too short"))
+
+        # This is equivalent to re.search('[+-Z]', tstr), but faster
+        tz_pos = (tstr.find('-') + 1 or tstr.find('+') + 1 or tstr.find('Z') + 1)
+        timestr = tstr[:tz_pos - 1] if tz_pos > 0 else tstr
+
+        time_comps = self._parse_hh_mm_ss_ff(timestr)
+
+        tzi = None
+        if tz_pos == len_str and tstr[-1] == 'Z':
+            tzi = timezone.utc
+        elif tz_pos > 0:
+            tzstr = tstr[tz_pos:]
+
+            # Valid time zone strings are:
+            # HH                  len: 2
+            # HHMM                len: 4
+            # HH:MM               len: 5
+            # HHMMSS              len: 6
+            # HHMMSS.f+           len: 7+
+            # HH:MM:SS            len: 8
+            # HH:MM:SS.f+         len: 10+
+
+            if len(tzstr) in (0, 1, 3):
+                raise ValueError(_("Malformed time zone string"))
+
+            tz_comps = self._parse_hh_mm_ss_ff(tzstr)
+
+            if all(x == 0 for x in tz_comps):
+                tzi = timezone.utc
+            else:
+                tzsign = -1 if tstr[tz_pos - 1] == '-' else 1
+
+                td = datetime.timedelta(
+                    hours=tz_comps[0], minutes=tz_comps[1],
+                    seconds=tz_comps[2], microseconds=tz_comps[3])
+
+                tzi = datetime.timezone(tzsign * td)
+
+        time_comps.append(tzi)
+
+        return time_comps
+
+    def fromisoformat(self, date_string):
+        """Construct a date from a string in ISO 8601 format."""
+        # TODO: Remove when drop python 3.10
+        if not isinstance(date_string, str):
+            raise TypeError(_('fromisoformat: argument must be str'))
+
+        if len(date_string) not in (7, 8, 10):
+            raise ValueError(_('Invalid isoformat string'))
+
+        try:
+            return self._parse_isoformat_date(date_string)
+        except Exception:
+            raise ValueError(_('Invalid isoformat string'))
+
     def validate(self, value):
         """
         Validate a value according to the field's type validation rules.
@@ -656,7 +766,7 @@ class CustomField(CloningMixin, ExportTemplatesMixin, ChangeLoggedModel):
             elif self.type == CustomFieldTypeChoices.TYPE_DATETIME:
                 if type(value) is not datetime:
                     try:
-                        datetime.fromisoformat(value)
+                        self.fromisoformat(value)
                     except ValueError:
                         raise ValidationError(
                             _("Date and time values must be in ISO 8601 format (YYYY-MM-DD HH:MM:SS).")
