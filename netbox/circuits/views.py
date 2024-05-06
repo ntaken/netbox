@@ -409,7 +409,7 @@ class CircuitContactsView(ObjectContactsView):
 #
 
 class CircuitTerminationListView(generic.ObjectListView):
-    queryset = CircuitTermination.objects.all()
+    queryset = CircuitTermination.objects.prefetch_related('circuit')
     filterset = filtersets.CircuitTerminationFilterSet
     filterset_form = forms.CircuitTerminationFilterForm
     table = tables.CircuitTerminationTable
@@ -417,7 +417,7 @@ class CircuitTerminationListView(generic.ObjectListView):
 
 @register_model_view(CircuitTermination)
 class CircuitTerminationView(generic.ObjectView):
-    queryset = CircuitTermination.objects.all()
+    queryset = CircuitTermination.objects.prefetch_related('circuit')
 
 
 @register_model_view(CircuitTermination, 'edit')
