@@ -96,6 +96,7 @@ class CircuitTerminationTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = CircuitTermination
         fields = (
-            'pk', 'id', 'circuit', 'term_side', 'created', 'last_updated', 'actions',
+            'pk', 'id', 'circuit', 'term_side', 'site', 'provider_network', 'port_speed', 'upstream_speed',
+            'xconnect_id', 'pp_info', 'description', 'created', 'last_updated', 'actions',
         )
-        default_columns = ('pk', 'id', 'circuit', 'term_side')
+        default_columns = ('pk', 'id', 'circuit', 'term_side', 'description')
