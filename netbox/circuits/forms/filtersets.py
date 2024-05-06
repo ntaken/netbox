@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import gettext as _
 
-from circuits.choices import CircuitCommitRateChoices, CircuitStatusChoices
+from circuits.choices import CircuitCommitRateChoices, CircuitStatusChoices, CircuitTerminationSideChoices
 from circuits.models import *
 from dcim.models import Region, Site, SiteGroup
 from ipam.models import ASN
@@ -193,5 +193,36 @@ class CircuitTerminationFilterForm(NetBoxModelFilterSetForm):
     model = CircuitTermination
     fieldsets = (
         FieldSet('q', 'filter_id', 'tag'),
+        FieldSet('circuit_id', 'term_side', name=_('Circuit')),
+        FieldSet('region_id', 'site_group_id', 'site_id', name=_('Location')),
+    )
+    region_id = DynamicModelMultipleChoiceField(
+        queryset=Region.objects.all(),
+        required=False,
+        label=_('Region')
+    )
+    site_group_id = DynamicModelMultipleChoiceField(
+        queryset=SiteGroup.objects.all(),
+        required=False,
+        label=_('Site group')
+    )
+    site_id = DynamicModelMultipleChoiceField(
+        queryset=Site.objects.all(),
+        required=False,
+        query_params={
+            'region_id': '$region_id',
+            'site_group_id': '$site_group_id',
+        },
+        label=_('Site')
+    )
+    circuit_id = DynamicModelMultipleChoiceField(
+        queryset=Circuit.objects.all(),
+        required=False,
+        label=_('Circuit')
+    )
+    term_side = forms.MultipleChoiceField(
+        label=_('Term Side'),
+        choices=CircuitTerminationSideChoices,
+        required=False
     )
     tag = TagFilterField(model)
