@@ -92,6 +92,18 @@ class CircuitTable(TenancyColumnsMixin, ContactsColumnMixin, NetBoxTable):
 
 
 class CircuitTerminationTable(NetBoxTable):
+    circuit = tables.Column(
+        verbose_name=_('Circuit'),
+        linkify=True
+    )
+    site = tables.Column(
+        verbose_name=_('Site'),
+        linkify=True
+    )
+    provider_network = tables.Column(
+        verbose_name=_('Provider Network'),
+        linkify=True
+    )
 
     class Meta(NetBoxTable.Meta):
         model = CircuitTermination
