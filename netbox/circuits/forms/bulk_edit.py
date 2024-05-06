@@ -13,6 +13,7 @@ from utilities.forms.widgets import DatePicker, NumberWithOptions
 
 __all__ = (
     'CircuitBulkEditForm',
+    'CircuitTerminationBulkEditForm',
     'CircuitTypeBulkEditForm',
     'ProviderBulkEditForm',
     'ProviderAccountBulkEditForm',
@@ -172,3 +173,17 @@ class CircuitBulkEditForm(NetBoxModelBulkEditForm):
     nullable_fields = (
         'tenant', 'commit_rate', 'description', 'comments',
     )
+
+
+class CircuitTerminationBulkEditForm(NetBoxModelBulkEditForm):
+    description = forms.CharField(
+        label=_('Description'),
+        max_length=200,
+        required=False
+    )
+
+    model = CircuitTermination
+    fieldsets = (
+        FieldSet('description'),
+    )
+    nullable_fields = ('description')

@@ -431,5 +431,23 @@ class CircuitTerminationDeleteView(generic.ObjectDeleteView):
     queryset = CircuitTermination.objects.all()
 
 
+class CircuitTerminationBulkImportView(generic.BulkImportView):
+    queryset = CircuitTermination.objects.all()
+    model_form = forms.CircuitTerminationImportForm
+
+
+class CircuitTerminationBulkEditView(generic.BulkEditView):
+    queryset = CircuitTermination.objects.all()
+    filterset = filtersets.CircuitTerminationFilterSet
+    table = tables.CircuitTerminationTable
+    form = forms.CircuitTerminationBulkEditForm
+
+
+class CircuitTerminationBulkDeleteView(generic.BulkDeleteView):
+    queryset = CircuitTermination.objects.all()
+    filterset = filtersets.CircuitTerminationFilterSet
+    table = tables.CircuitTerminationTable
+
+
 # Trace view
 register_model_view(CircuitTermination, 'trace', kwargs={'model': CircuitTermination})(PathTraceView)

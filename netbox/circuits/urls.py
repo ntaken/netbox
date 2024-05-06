@@ -50,6 +50,9 @@ urlpatterns = [
     # Circuit terminations
     path('circuit-terminations/', views.CircuitTerminationListView.as_view(), name='circuittermination_list'),
     path('circuit-terminations/add/', views.CircuitTerminationEditView.as_view(), name='circuittermination_add'),
+    path('circuit-terminations/import/', views.CircuitTerminationBulkImportView.as_view(), name='circuittermination_import'),
+    path('circuit-terminations/edit/', views.CircuitTerminationBulkEditView.as_view(), name='circuittermination_bulk_edit'),
+    path('circuit-terminations/delete/', views.CircuitTerminationBulkDeleteView.as_view(), name='circuittermination_bulk_delete'),
     path('circuit-terminations/<int:pk>/', include(get_model_urls('circuits', 'circuittermination'))),
 
 ]
