@@ -408,6 +408,18 @@ class CircuitContactsView(ObjectContactsView):
 # Circuit terminations
 #
 
+class CircuitTerminationListView(generic.ObjectListView):
+    queryset = CircuitTermination.objects.all()
+    filterset = filtersets.CircuitTerminationFilterSet
+    filterset_form = forms.CircuitTerminationFilterForm
+    table = tables.CircuitTerminationTable
+
+
+@register_model_view(CircuitTermination)
+class CircuitTerminationView(generic.ObjectView):
+    queryset = CircuitTermination.objects.all()
+
+
 @register_model_view(CircuitTermination, 'edit')
 class CircuitTerminationEditView(generic.ObjectEditView):
     queryset = CircuitTermination.objects.all()

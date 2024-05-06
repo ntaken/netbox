@@ -13,6 +13,7 @@ from utilities.forms.widgets import DatePicker, NumberWithOptions
 
 __all__ = (
     'CircuitFilterForm',
+    'CircuitTerminationFilterForm',
     'CircuitTypeFilterForm',
     'ProviderFilterForm',
     'ProviderAccountFilterForm',
@@ -184,5 +185,13 @@ class CircuitFilterForm(TenancyFilterForm, ContactModelFilterForm, NetBoxModelFi
         widget=NumberWithOptions(
             options=CircuitCommitRateChoices
         )
+    )
+    tag = TagFilterField(model)
+
+
+class CircuitTerminationFilterForm(NetBoxModelFilterSetForm):
+    model = CircuitTermination
+    fieldsets = (
+        FieldSet('q', 'filter_id', 'tag'),
     )
     tag = TagFilterField(model)
