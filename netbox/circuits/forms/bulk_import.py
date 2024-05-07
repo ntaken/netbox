@@ -1,7 +1,8 @@
 from django import forms
 
-from circuits.choices import CircuitStatusChoices
+from circuits.choices import CircuitStatusChoices, CircuitTerminationSideChoices
 from circuits.models import *
+from circuits.choices import *
 from dcim.models import Site
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -112,6 +113,15 @@ class CircuitImportForm(NetBoxModelImportForm):
 
 
 class CircuitTerminationImportForm(forms.ModelForm):
+    circuit = CSVModelChoiceField(
+        label=_('Circuit'),
+        queryset=Circuit.objects.all(),
+        to_field_name='cid',
+    )
+    term_side = CSVChoiceField(
+        label=_('Termination'),
+        choices=CircuitTerminationSideChoices,
+    )
     site = CSVModelChoiceField(
         label=_('Site'),
         queryset=Site.objects.all(),
@@ -129,5 +139,5 @@ class CircuitTerminationImportForm(forms.ModelForm):
         model = CircuitTermination
         fields = [
             'circuit', 'term_side', 'site', 'provider_network', 'port_speed', 'upstream_speed', 'xconnect_id',
-            'pp_info', 'description',
+            'pp_info', 'description', 'tags'
         ]
