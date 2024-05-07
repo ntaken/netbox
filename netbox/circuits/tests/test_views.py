@@ -287,10 +287,7 @@ class ProviderNetworkTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
 
-class CircuitTerminationTestCase(
-    ViewTestCases.EditObjectViewTestCase,
-    ViewTestCases.DeleteObjectViewTestCase,
-):
+class CircuitTerminationTestCase(ViewTestCases.PrimaryObjectViewTestCase):
     model = CircuitTermination
 
     @classmethod
@@ -324,6 +321,24 @@ class CircuitTerminationTestCase(
             'circuit': circuits[2].pk,
             'term_side': 'A',
             'site': sites[2].pk,
+            'description': 'New description',
+        }
+
+        cls.csv_data = (
+            "circuit,term_side,site,description",
+            "Circuit 3,A,Site 1,Foo",
+            "Circuit 3,Z,Site 1,Bar",
+        )
+
+        cls.csv_update_data = (
+            "id,port_speed,description",
+            f"{circuit_terminations[0].pk},100,New description7",
+            f"{circuit_terminations[1].pk},200,New description8",
+            f"{circuit_terminations[2].pk},300,New description9",
+        )
+
+        cls.bulk_edit_data = {
+            'port_speed': 400,
             'description': 'New description',
         }
 

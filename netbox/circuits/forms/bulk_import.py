@@ -112,7 +112,7 @@ class CircuitImportForm(NetBoxModelImportForm):
         ]
 
 
-class CircuitTerminationImportForm(forms.ModelForm):
+class CircuitTerminationImportForm(NetBoxModelImportForm):
     circuit = CSVModelChoiceField(
         label=_('Circuit'),
         queryset=Circuit.objects.all(),
