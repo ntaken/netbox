@@ -3,13 +3,14 @@ from django.utils.translation import gettext_lazy as _
 
 from circuits.choices import CircuitCommitRateChoices, CircuitStatusChoices
 from circuits.models import *
+from dcim.models import Site
 from ipam.models import ASN
 from netbox.forms import NetBoxModelBulkEditForm
 from tenancy.models import Tenant
 from utilities.forms import add_blank_choice
 from utilities.forms.fields import ColorField, CommentField, DynamicModelChoiceField, DynamicModelMultipleChoiceField
-from utilities.forms.rendering import FieldSet
-from utilities.forms.widgets import DatePicker, NumberWithOptions
+from utilities.forms.rendering import FieldSet, TabbedGroups
+from utilities.forms.widgets import BulkEditNullBooleanSelect, DatePicker, NumberWithOptions
 
 __all__ = (
     'CircuitBulkEditForm',
@@ -181,9 +182,40 @@ class CircuitTerminationBulkEditForm(NetBoxModelBulkEditForm):
         max_length=200,
         required=False
     )
+    site = DynamicModelChoiceField(
+        label=_('Site'),
+        queryset=Site.objects.all(),
+        required=False
+    )
+    provider_network = DynamicModelChoiceField(
+        label=_('Provider Network'),
+        queryset=ProviderNetwork.objects.all(),
+        required=False
+    )
+    port_speed = forms.IntegerField(
+        required=False,
+        label=_('Port speed (Kbps)'),
+    )
+    upstream_speed = forms.IntegerField(
+        required=False,
+        label=_('upstream speed (Kbps)'),
+    )
+    mark_connected = forms.NullBooleanField(
+        label=_('Mark connected'),
+        required=False,
+        widget=BulkEditNullBooleanSelect
+    )
 
     model = CircuitTermination
     fieldsets = (
-        FieldSet('description'),
+        FieldSet(
+            'description',
+            TabbedGroups(
+                FieldSet('site', name=_('Site')),
+                FieldSet('provider_network', name=_('Provider Network')),
+            ),
+            'mark_connected', name=_('Circuit Termination')
+        ),
+        FieldSet('port_speed', 'upstream_speed', name=_('Termination Details')),
     )
     nullable_fields = ('description')
