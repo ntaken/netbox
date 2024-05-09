@@ -198,7 +198,7 @@ class CircuitTerminationBulkEditForm(NetBoxModelBulkEditForm):
     )
     upstream_speed = forms.IntegerField(
         required=False,
-        label=_('upstream speed (Kbps)'),
+        label=_('Upstream speed (Kbps)'),
     )
     mark_connected = forms.NullBooleanField(
         label=_('Mark connected'),

@@ -196,16 +196,6 @@ class CircuitTerminationFilterForm(NetBoxModelFilterSetForm):
         FieldSet('circuit_id', 'term_side', name=_('Circuit')),
         FieldSet('region_id', 'site_group_id', 'site_id', name=_('Location')),
     )
-    region_id = DynamicModelMultipleChoiceField(
-        queryset=Region.objects.all(),
-        required=False,
-        label=_('Region')
-    )
-    site_group_id = DynamicModelMultipleChoiceField(
-        queryset=SiteGroup.objects.all(),
-        required=False,
-        label=_('Site group')
-    )
     site_id = DynamicModelMultipleChoiceField(
         queryset=Site.objects.all(),
         required=False,

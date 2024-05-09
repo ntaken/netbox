@@ -96,6 +96,11 @@ class CircuitTerminationTable(NetBoxTable):
         verbose_name=_('Circuit'),
         linkify=True
     )
+    circuit_provider = tables.Column(
+        verbose_name=_('Circuit Provider'),
+        linkify=True,
+        accessor='circuit.provider'
+    )
     site = tables.Column(
         verbose_name=_('Site'),
         linkify=True
@@ -108,7 +113,7 @@ class CircuitTerminationTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = CircuitTermination
         fields = (
-            'pk', 'id', 'circuit', 'term_side', 'site', 'provider_network', 'port_speed', 'upstream_speed',
+            'pk', 'id', 'circuit', 'circuit_provider', 'term_side', 'site', 'provider_network', 'port_speed', 'upstream_speed',
             'xconnect_id', 'pp_info', 'description', 'created', 'last_updated', 'actions',
         )
-        default_columns = ('pk', 'id', 'circuit', 'term_side', 'description')
+        default_columns = ('pk', 'id', 'circuit', 'circuit_provider', 'term_side', 'description')
